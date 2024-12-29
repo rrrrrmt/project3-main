@@ -1,0 +1,202 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avoidable Deaths per 100,000</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div class="graph" data-graph-type="scatter2">
+        <h3>Avoidable Deaths per 100,000 people</h3>
+        <svg></svg>
+    </div>
+    <script>
+        // Set dimensions and margins for the graph
+        const margin = {top: 10, right: 30, bottom: 30, left: 60},
+            width = 960 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+
+        // Append the svg object to the div
+        const svg = d3.select("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+        // Load data from CSV file
+        d3.csv("avoidable_deaths.csv").then(function(data) {
+
+            // Format the data
+            data.forEach(function(d) {
+                d.Year = +d.Year;
+                d["Avoidable Deaths per 100k"] = +d["Avoidable Deaths per 100k"];
+            });
+
+            // Group data by country
+            const sumstat = d3.group(data, d => d.Country);
+
+            // Add X axis
+            const x = d3.scaleLinear()
+                .domain(d3.extent(data, d => d.Year))
+                .range([ 0, width ]);
+            svg.append("g")
+                .attr("transform", `translate(0, ${height})`)
+                .call(d3.axisBottom(x).tickFormat(d3.format("d")));
+
+            // Add Y axis
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(data, d => d["Avoidable Deaths per 100k"])])
+                .range([ height, 0]);
+            svg.append("g")
+                .call(d3.axisLeft(y));
+
+            // Add a color scale for different countries
+            const color = d3.scaleOrdinal()
+                .domain(["AUS", "CAN", "FRA", "GER", "JPN", "KOR", "NET", "NOR", "NZ", "SWE", "SWI", "UK", "US"])
+                .range(d3.schemeTableau10);
+
+            // Add line paths for each country
+            const line = d3.line()
+                .x(function(d) { return x(d.Year); })
+                .y(function(d) { return y(d["Avoidable Deaths per 100k"]); });
+            svg.selectAll(".line")
+                .data(sumstat)
+                .enter()
+                .append("path")
+                .attr("fill", "none")
+                .attr("stroke", d => color(d[0]))
+                .attr("stroke-width", 1.5)
+                .attr("d", d => line(d[1]));
+
+            // Add dots
+            svg.append("g")
+                .selectAll("dot")
+                .data(data)
+                .enter()
+                .append("circle")
+                .attr("cx", function(d) { return x(d.Year); })
+                .attr("cy", function(d) { return y(d["Avoidable Deaths per 100k"]); })
+                .attr("r", 5)
+                .style("fill", function(d) { return color(d.Country); })
+
+        }).catch(function(error) {
+            console.log(error);
+        });
+    </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avoidable Deaths per 100,000</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div class="graph" data-graph-type="scatter2">
+        <h3>Avoidable Deaths per 100,000 people</h3>
+        <svg></svg>
+    </div>
+    <div class="tooltip" style="display: none;"></div>
+
+    <script>
+        // Set dimensions and margins for the graph
+        const margin = {top: 10, right: 30, bottom: 30, left: 60},
+            width = 960 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+
+        // Append the svg object to the div
+        const svg = d3.select("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+        const tooltip = d3.select('body').append('div')
+            .attr('class', 'tooltip')
+            .style('position', 'absolute')
+            .style('display', 'none')
+            .style('background', 'white')
+            .style('border', '1px solid')
+            .style('padding', '10px')
+            .style('pointer-events', 'none');
+
+        // Load data from CSV file
+        d3.csv("avoidable_deaths.csv").then(function(data) {
+
+            // Format the data and filter out zeroes
+            data = data.filter(d => +d["Avoidable Deaths per 100k"] > 0).map(d => {
+                return {
+                    Country: d.Country,
+                    Year: +d.Year,
+                    "Avoidable Deaths per 100k": +d["Avoidable Deaths per 100k"]
+                };
+            });
+
+            // Group data by country
+            const sumstat = d3.group(data, d => d.Country);
+
+            // Add X axis
+            const x = d3.scaleLinear()
+                .domain(d3.extent(data, d => d.Year))
+                .range([ 0, width ]);
+            svg.append("g")
+                .attr("transform", `translate(0, ${height})`)
+                .call(d3.axisBottom(x).tickFormat(d3.format("d")));
+
+            // Add Y axis
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(data, d => d["Avoidable Deaths per 100k"])])
+                .range([ height, 0]);
+            svg.append("g")
+                .call(d3.axisLeft(y));
+
+            // Add a color scale for different countries
+            const color = d3.scaleOrdinal()
+                .domain(["AUS", "CAN", "FRA", "GER", "JPN", "KOR", "NET", "NOR", "NZ", "SWE", "SWI", "UK", "US"])
+                .range(d3.schemeTableau10);
+
+            // Add line paths for each country
+            const line = d3.line()
+                .x(d => x(d.Year))
+                .y(d => y(d["Avoidable Deaths per 100k"]))
+                .defined(d => d["Avoidable Deaths per 100k"] > 0); // Define the line only for non-zero values
+
+            svg.selectAll(".line")
+                .data(sumstat)
+                .enter()
+                .append("path")
+                .attr("fill", "none")
+                .attr("stroke", d => color(d[0]))
+                .attr("stroke-width", 1.5)
+                .attr("d", d => line(d[1]));
+
+            // Add dots for non-zero data points
+            svg.append("g")
+                .selectAll("dot")
+                .data(data)
+                .enter()
+                .append("circle")
+                .attr("cx", d => x(d.Year))
+                .attr("cy", d => y(d["Avoidable Deaths per 100k"]))
+                .attr("r", 5)
+                .style("fill", d => color(d.Country))
+                .on('mouseover', function(event, d) {
+                    tooltip.style('display', 'block')
+                        .html(`${d.Year}<br>${d.Country}<br>${d["Avoidable Deaths per 100k"]}`)
+                        .style('left', (event.pageX + 10) + 'px')
+                        .style('top', (event.pageY - 20) + 'px');
+                })
+                .on('mouseout', function() {
+                    tooltip.style('display', 'none');
+                });
+
+        }).catch(function(error) {
+            console.log(error);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://d3js.org/topojson.v3.min.js"></script>
+    <script src="https://unpkg.com/scrollama"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&family=Karla:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+
+    <title>Healthcare Insurance</title>
+    <style>
+        body {
+            width: 75%;         
+            margin: 0 auto;     
+            /* padding: 20px; */
+            display: flex;
+            flex-direction: column;
+            gap: 50px;
+            align-items: center;
+            /* background-color: #1E1E1E; */
+            background-image: url('film_background.png');
+            background-attachment: fixed;
+            background-size: cover; 
+            background-repeat: no-repeat;
+            background-position: center;
+            color: #EBA24F;
+            font-family: 'Inconsolata', sans-serif;
+        }
+
+        .bodytext{
+            margin-top: 50px;
+            margin-bottom: 20px;
+            max-width: 700px;
+            justify-content: center;
+        }
+
+        .bodytext p {
+            margin: 0;
+        }
+
+        #output {
+            background-color: #e0e0e0;
+            padding: 5px;
+            border-radius: 5px;
+            color: #000000;
+        }
+
+        #national {
+            background-color: #e0e0e0;
+            padding: 5px;
+            border-radius: 5px;
+            color: #000000;
+            margin-left: 5px;
+        }
+
+        #heat-legend {
+            padding-top: 20px;
+            color: white;
+        }
+
+        #dissatisfaction-text {
+            /* margin-top: 50px;
+            margin-bottom: 20px; */
+            max-width: 700px;
+            /* background-color: #f4f4f4; */
+            justify-content: center;
+            gap: 1rem;
+        }
+
+
+        text {
+            font-family: 'Inconsolata', sans-serif;
+
+        }
+        h2 {
+            margin-top: 20px;
+            /* margin-bottom: 0; */
+            margin: 0;
+            text-align: center;
+            font-family: 'Karla', sans-serif;
+            font-weight: 700;
+            background-color: #000000;
+            border-color: #ffffff;
+            color: #EBA24F;
+            /* color: #EBA24F; */
+            border-width: 5px;
+            border-style: solid;
+            padding: 1rem;
+        }
+        h3{
+            font-family: 'Karla', sans-serif;;
+            font-weight: 700;
+            text-align: center;
+            background-color: #000000;
+            border-color: #ffffff;
+            color: #EBA24F;
+            border-width: 5px;
+            border-style: solid;
+            border-width: 5px;
+            padding: 1rem;
+
+        }
+
+        h4 {
+            background-color: #000000;
+            border-color: #ffffff;
+            color: #eebd85;
+            border-width: 5px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .landing-background {
+            width: 100%;
+        }
+        .landing-background img {
+            height: 150vh;
+        }
+
+        .text-content {
+            margin-top: 6rem;
+            margin-bottom: 30px;
+        }
+
+        .graph {
+        /* max-width: 48%;  */
+        width: 100%;
+        height: 100%;
+        /* padding: 10px;  */
+        align-items: flex-start;
+        justify-content: left;
+        }
+
+        .state {
+            fill: lightgrey;
+        }
+
+        .outline {
+            fill: none;
+            stroke: black;
+            stroke-width: 1px;
+        }
+
+        .graticule {
+            fill: none;
+            stroke: rgb(191, 191, 191);
+            stroke-width: 1px;
+        }
+
+        .tooltip {
+            pointer-events: none;
+            cursor: pointer;
+        }
+
+        .flex-row {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid black;
+            min-height: 600px;
+        }
+
+        svg {
+            width: 100%;       
+            height: auto;      
+        }
+
+        p {
+            background-color: #000000;
+            color: #f1ebeb;
+            /* color: #EBA24F; */
+            padding: 1rem;
+            line-height: 1.4rem;
+            font-size: 1.1rem;
+        }
+
+        .box {
+            border: 2px solid black;
+        }
+
+        .scrolling-section {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .commentary {
+            position: sticky;
+            top: 10px; 
+            z-index: 10;
+        }
+        #scrolly, #scrolly-monopoly {
+			position: relative;
+			display: -webkit-box;
+			display: -ms-flexbox;
+			display: flex;
+			/* background-color: #f3f3f3; */
+			/* padding: 1rem; */
+            min-width: 80vw;
+		}
+        figure, article {
+            width: 100%;
+        }
+
+		#scrolly>* , #scrolly-monopoly>*{
+			-webkit-box-flex: 1;
+			-ms-flex: 1;
+			flex: 1;
+		}
+
+		article {
+            flex: 3;
+			position: relative;
+			padding: 0 1rem;
+			/* max-width: 20rem; */
+		}
+
+        .middlepls {
+            display: flex;
+            flex-direction: column;
+            /* justify-content: center; */
+            align-items: center;
+            /* margin-bottom: 20px;   */
+        }
+
+        .middlepls .bodytext {
+            /* margin-bottom: 50px; */
+        }
+
+        .scale-labels {
+        }
+
+        .scale-labels p {
+            padding: 0;
+            margin: 0;
+            
+        }
+
+		figure {
+            flex: 2 !important;
+			position: -webkit-sticky;
+			position: sticky;
+			width: 100%;
+			margin: 0;
+			-webkit-transform: translate3d(0, 0, 0);
+			-moz-transform: translate3d(0, 0, 0);
+			transform: translate3d(0, 0, 0);
+			/* background-color: white; */
+			z-index: 0;
+            display: flex;
+            align-items: center;
+		}
+
+		figure p {
+			text-align: center;
+			padding: 1rem;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			-moz-transform: translate(-50%, -50%);
+			-webkit-transform: translate(-50%, -50%);
+			transform: translate(-50%, -50%);
+			font-size: 8rem;
+			font-weight: 900;
+			color: #fff;
+		}
+
+        .graph h3 {
+            padding: 0;
+            margin: 0;
+        }
+
+		.step {
+			margin: 0 auto 2rem auto;
+            align-content: center;
+		}
+
+		.step:last-child {
+			margin-bottom: 0;
+		}
+
+		.step.is-active {
+			background-color: #000000;
+            border-color: #ffffff;
+            color: #EBA24F;
+		}
+
+		.step p {
+            text-align: left;
+			/* text-align: center;
+			padding: 1rem;
+			font-size: 1.5rem; */
+            background-color: #000000;
+            color: #f1ebeb;
+            /* color: #EBA24F; */
+            padding: 1rem;
+            line-height: 1.4rem;
+            font-size: 1.1rem;
+		}
+
+        .graphstogether {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            align-items: top; 
+            background-color: #EBEBEB;
+            /* padding: 1rem;  */
+        }
+
+        .newh3 {
+            background-color: #bfbfbf;
+        }
+
+        .newgraphstogether {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            align-items: top; 
+            background-color: #bfbfbf;  
+        }
+
+        /* .verticalgraphs {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+        } */
+
+        /* .graph {
+            width: 100%;       
+            min-height: 500px;
+            padding: 10px;
+            align-items: flex-start;
+            justify-content: left;
+        } */
+         
+
+        .graphlegend {
+            background-color: #3b3b3b;
+            padding: 1rem;
+        }
+
+        .newgraphlegend {
+            background-color: #bfbfbf;
+            padding: 1rem;
+        }
+
+        #nobottom {
+            margin-bottom: o;
+        }
+
+        #companySelect {
+            background-color: lightgray; 
+            color: black;             
+            border: none;            
+            padding: 4px 8px;         
+            font-size: 12px;           
+            border-radius: 5px;        
+            outline: none;            
+            cursor: pointer;           
+            width: auto; 
+            font-family: 'Inconsolata', sans-serif;
+            
+        }
+
+        /* Container to align the select dropdown */
+        .buttoncontainer {
+            text-align: left;  /* Aligns the children to the left */
+            font-family: 'Inconsolata', sans-serif;
+
+        }
+
+
+        /* legend style */
+        .legend-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center; 
+            gap: 10px; 
+            max-width: 100%;
+            margin-top: 20px;
+            background-color: #3b3b3b;
+            /* padding: 1rem; */
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            justify-content: start; 
+            gap: 10px; 
+            font-size: 10pt;
+            /* width: 200px;  */
+            text-align: left;
+            /* padding: 10px;
+            background-color: #ffffff; */
+        }
+
+        .legend-items {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap; 
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            gap: 5px;
+        }
+
+        #legend-container h3 {
+                font-size: 12pt;
+                text-align: center;
+                margin-top: 5px;
+                margin-bottom: 10px;
+
+            }
+        .legend-color {
+                width: 20px;
+                height: 20px;
+                flex-shrink: 0;
+            }
+
+        .bodytext h4 {
+            margin: 0;
+            padding-left: 1rem;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        
+        /* TOOLTIP STYLE */
+        .tooltip {
+                position: absolute;
+                background: #f9f9f9;
+                border: 1px solid #ccc;
+                padding: 5px;
+                font-size: 12px;
+                color: black;
+            }
+        
+        /* intro styling */
+        #introimg {
+            height: 100vh;
+            opacity: 1; transition: opacity 1s;
+
+        }
+
+		#scrollyintro {
+			position: relative;
+			padding: 1rem;
+		}
+
+        #scrollyintro article {
+			position: relative;
+			padding: 0;
+			/* max-width: 30rem; */
+            max-width: 700px;
+			margin: 0 auto;
+		}
+
+        #scrollyintro figure {
+			position: -webkit-sticky;
+			position: sticky;
+			left: 0;
+            justify-content: center;
+            height: 100vh;
+			margin: 0;
+			-webkit-transform: translate3d(0, 0, 0);
+			-moz-transform: translate3d(0, 0, 0);
+			transform: translate3d(0, 0, 0);
+			z-index: 0;
+		}
+        #scrollyintro .step {
+			margin: 0 auto 2rem auto;
+			color: #fff;
+		}
+
+		#scrollyintro .step:last-child {
+			margin-bottom: 0;
+		}
+
+
+		/* #scrollyintro .step p {
+			text-align: center;
+			padding: 1rem;
+			font-size: 1.1rem;
+			background-color: #3b3b3b;
+		} */
+
+        .vid {
+            width: 100%; 
+            display: block; 
+            text-align: center; 
+        }
+
+        .vid video {
+            display: block;
+            margin: 0 auto;
+        }
+
+        article h2 {
+            text-align: center;
+            font-family: 'Karla', sans-serif;
+            font-weight: 700;
+            padding: 1rem;
+        }
+        /* end of intro styling */
+
+        #slider-container {
+            width: 500px;
+            /* margin: 50px auto; */
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .slider {
+            width: 100%;
+            accent-color: red;
+        }
+
+        .slider-ticks {
+            position: absolute;
+            top: 18px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .slider-tick {
+            position: relative;
+            height: 10px;
+            width: 2px;
+            background: #333;
+        }
+
+        .slider-labels {
+            position: absolute;
+            top: 30px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .slider-label {
+            font-size: 12px;
+            font-family: 'Inconsolata', sans-serif;
+            text-align: center;
+        }
+
+        @media (max-width: 750px) {
+            #scrolly-monopoly {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .left, #monopoly-board-container {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        #heatmapdivdiv {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .heat-legend {
+            display: block;
+            /* justify-content: center; */
+            align-items: center;
+            /* margin: 20px auto; */
+            text-align: center;
+            width: fit-content;
+            /* background-color: #bfbfbf; */
+
+        }
+
+        .colorLegend {
+            display: inline-block;
+            align-items: center;
+            height: auto;
+            max-width: 100%;
+        }
+
+        #heat-title {
+            margin: 0;
+        }
+
+        #heatmapdiv {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        #scrolly-monopoly figure {
+			position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+		}
+
+        #man { transition: all 0.5s; }
+        .highlight {
+            fill: rgba(0, 0, 0, 0.2);
+            transition: fill 0.5s;
+        }
+        #monopoly-board-container {
+            width: 100%;
+            min-height: 400px;
+            /* display: flex;
+            align-items: center;
+            position: relative; */
+        }
+        #monopoly-board {
+            /* display: flex;
+            flex-direction: column;
+            align-items: center; */
+            width: 100%;
+            height: auto;
+            display: block;
+            margin: auto;
+        }
+        
+        #board {
+            width: 100%;
+        }
+
+        section {
+            text-align: right;
+        }
+        
+        .new-gray {
+            background-color: #000000;
+            border-color: #ffffff;
+            color: #EBA24F;
+            border-width: 5px;
+            border-style: solid;
+            border-top: none;
+            
+        }
+
+        .graph-text {
+            color: #EBA24F;
+            border-style: none;
+            background-color: #000000;
+            gap: 1rem;
+
+        }
+
+        .black {
+            color: black;
+        }
+
+        .left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: left;
+            width: 100%;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            padding-left: 15px;
+            padding-right: 30px;
+        }
+
+        .checkbox-label {
+            padding-left: 10px;
+        }
+
+#event-text {
+    width: 100%;
+    margin-left: 0;
+}
+
+#dice {
+    cursor: pointer;
+    margin-bottom: 15px;
+    width: 10vw;
+    height: auto;
+    max-width: 200px;
+    max-height: 200px;
+}
+
+.chart {
+    background-color: #3b3b3b;
+    padding: 1rem;
+}
+
+
+.scales {
+    width: 100%;
+    height: 100%;
+    padding-bottom: 0.5rem;
+    /* overflow: visible; */
+}
+.bar-chart-background {
+        background-image: url('scale-tape-gray.svg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+.healthcare-section {
+    /* margin-bottom: 2rem; */
+    background-color: rgb(235, 235, 235);
+    border-color: #000000;
+    border-style: solid;
+    border-width: 10px;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+.healthcare-section #image-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    width: 80%;
+    margin: auto;
+}
+.healthcare-section img {
+    width: 180px;
+    height: 120px;
+    margin: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.healthcare-section img.active {
+    width: 180px;
+    height: 120px;
+}
+.healthcare-section #story {
+    padding: 10px 20px;
+    background-color: #f4f4f4;
+    color: black;
+    border-radius: 10px;
+    position: absolute;
+    transform: translate(20px, -20px);
+    display: none;
+    max-width: 300px;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+    margin-right: 2rem;
+    margin-bottom: 2rem;
+}
+    </style>
+
+</head>
+<body>
+    <!-- <div>
+        <figure class="landing-background">
+            <img src="landing-background-ver2.png">
+        </figure>
+    </div> -->
+    <div id="intromain">
+        <section id="scrollyintro">
+            <figure>
+                <img id="introimg" src="landing-page-logo.png" >
+            </figure>
+
+            <article>
+                <div class="step" data-step="1">
+                    <h2>On December 4, 2024, a shocking event captured the nation's attention: the CEO of UnitedHealthcare, Brian Thompson, was murdered in Manhattan.</h2>
+                </div>
+                <div class="step" data-step="2">
+                    <h2>Yet, the public's reaction was unsettlingly numb, with many cracking jokes about his death.</h2>
+                </div>
+                <div class="step" data-step="3"></div>
+                <div class="step" data-step="4"></div>
+                <div class="step" data-step="5"></div>
+                <div class="step" data-step="6"></div>
+                <div class="step" data-step="7"></div>
+
+                
+                <div class="step" data-step="8">
+                    <h2>Instead, the spotlight shone on the suspected murderer, Luigi Mangione, who was elevated to a hero status across the internet, celebrated through countless memes and viral content.</h2>
+                    <div class="vid">
+                        <video id= 'myVideo' width="320" height="500" controls>
+                            <source src="luigi_love.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <!-- <p>
+                        This phenomenon of adoration towards a figure associated with such a violent act 
+                        may seem perplexing at first glance. However, we seek to 
+                        unravel the complex relationship between the public's sentiment and the deep-seated issues within 
+                        the American healthcare system, particularly focusing on the insurance sector dominated by giants 
+                        like <strong>UnitedHealthcare</strong>.
+                    </p> -->
+                </div>
+
+            
+            </article>
+        </section>
+    </div>
+
+    <!-- video listener script -->
+    <script>
+        //autoplay video event listener
+        document.addEventListener("DOMContentLoaded", function() {
+            var video = document.getElementById('myVideo');
+
+            var observer = new IntersectionObserver(function(entries) {
+                // Loop over entries
+                entries.forEach(entry => {
+                    // console.log("intersection", entry.isIntersecting);
+                if (entry.isIntersecting) {
+                    video.play();
+                } else {
+                    video.pause();
+                }
+                });
+            }, { threshold: 0.5 }); // Trigger when 50% of the video is visible
+
+            // Observe the video element
+            observer.observe(video);
+            });
+
+    </script>
+
+    <script>
+        // SCROLLAMA INTRO SCRIPT SOURCE: https://russellsamora.github.io/scrollama/sticky-overlay/
+        var main = d3.select("#intromain");
+        var scrolly = main.select("#scrollyintro");
+        var figure = scrolly.select("figure");
+        var article = scrolly.select("article");
+        var step = article.selectAll(".step");
+    
+        // Array of images for each step
+        var stepImages = [
+            'landing-page-logo.png',  // Associated with Step 1
+            'image1.png',                  // Associated with Step 2
+            'image2.png',                  // Associated with Step 3
+            'image3.png',                   // Associated with Step 4
+            'image4.png',
+            'image5.png',   
+            'image6.png',
+            'imageblank.png'
+        ];
+    
+        // initialize the scrollama
+        var scroller = scrollama();
+    
+        		// generic window resize listener event
+		function handleResize() {
+			// 1. update height of step elements
+			var stepH = Math.floor(window.innerHeight * 0.75);
+			step.style("height", stepH + "px");
+
+			var figureHeight = window.innerHeight / 2;
+			var figureMarginTop = (window.innerHeight - figureHeight) / 2;
+
+			figure
+				.style("height", figureHeight + "px")
+				.style("top", figureMarginTop + "px");
+
+			scroller.resize();
+		}
+
+		// scrollama event handlers
+		function handleStepEnter(response) {
+			console.log(response);
+			// response = { element, direction, index }
+
+            var img = document.getElementById("introimg"); 
+            console.log(response.index)
+            if (response.index === 1 && response.direction != 'up') {
+                img.style.opacity = 0;
+                    setTimeout(() => {
+                        img.src = stepImages[response.index]; 
+                        img.style.opacity = 1;
+                    }, 900);
+            }
+            else {
+                img.src = stepImages[response.index]; 
+            }
+		}
+
+
+		function init() {
+
+			// 1. force a resize on load to ensure proper dimensions are sent to scrollama
+			handleResize();
+
+			// 2. setup the scroller passing options
+			// 		this will also initialize trigger observations
+			// 3. bind scrollama event handlers (this can be chained like below)
+			scroller
+				.setup({
+					step: "#scrollyintro article .step",
+					offset: 0.33,
+					debug: false
+				})
+				.onStepEnter(handleStepEnter);
+		}
+
+		// kick things off
+		init();
+
+        //END OF SCROLLAMA INTRO 
+    </script>
+
+    <div id="dissatisfaction-text" style="margin-top: 20%;">     
+        <h2>How does the public's reaction to this murder reflect deeper issues within the American healthcare system, particularly in the insurance sector dominated by giants like UnitedHealthcare?</h2>
+        <p>
+            Health insurance companies, like UnitedHealth Group, often profit by denying services they promise to provide. 
+            From 2011 to 2022, their revenues skyrocketed, significantly outpacing the healthcare costs paid by individuals. 
+            This reveals a stark contrast between the industry's profit motives and the financial burdens placed on consumers. 
+            Given this, it's worth questioning <strong style="text-decoration: underline;">why any sympathy should be extended to a CEO who profits from what many see as exploitation of those they should be supporting.</strong>
+        </p>
+    </div>
+
+    <main>
+        <section class="col">
+            <h2> Exploring the Discontent: Revenue vs. Healthcare Costs </h2>
+            <div class="graphlegend new-gray">
+            <!-- <div class="verticalgraphs"> -->
+            <div class ="graphstogether graph-text">
+                <div class="graph" data-graph-type="line">
+                    <h3 class="graph-text"> Private Health Insurance Revenue Over Time in Billions</h3>
+                    <div class="buttoncontainer">
+                    <!-- <select id="companySelect" onchange="update(this.value)"></select> -->
+                    </div>
+                    <svg class=""></svg>
+                </div>
+                <div class="graph" data-graph-type="premiumbar">
+                    <h3 class="graph-text"> Total U.S. Healthcare Spending Per Person Over Time </h3>
+                    <svg></svg>
+                    <div class="tooltip" style="opacity: 0;"></div>
+                </div>
+            </div>
+            <div class = "legend-items" id="checkboxes-container"></div>
+            <!-- </div> -->
+        </div>
+        </section>
+
+        <div id="heatmapdivdiv" style="margin-top: 10%;">
+            <div class="bodytext">
+                <h2>The Burden of Medical Debt</h2>
+                <h3 class="graph-text"> USA Median Medical Debt in <span id="output"> 2011 </span> is $<span id="national">830</span></h3>
+                <p>
+                    Diving deeper, the situation is exacerbated by the overwhelming medical debt that plagues many Americans. 
+                    Our visualizations depict how different states fare in terms of median medical debt. The median began 
+                    to slowly decrease after 2014 when the Affordable Care Act was expanded in all but 10 states.
+                    Despite some decreases following healthcare reforms, the persistent high levels of debt on top of 
+                    annual healthcare cost of $ 13,493 per person as shown in bar chart above underline a systemic failure to 
+                    protect the most vulnerable.
+                </p>
+            </div>
+            <!-- <div id="button-bar"></div> -->
+            <div id="slider-container">
+                <input type="range" id="slider" class="slider" min="2011" max="2022" step="1" value="2011">
+                <div class="slider-ticks" id="slider-ticks"></div>
+                <div class="slider-labels" id="slider-labels"></div>
+            </div>
+            <div id="heatmapdiv"></div>
+            <div id="heat-legend">
+                <svg id="colorLegend" height="75" width="600"></svg>
+            </div>
+        </div>
+
+        <div class="middlepls" style="margin-top: 5%;">
+            <div class="bodytext">        
+                <h2>With healthcare cost and medical debt increasing, how is the quality of healthcare in United States?</h2>
+        
+                <p>Moreover, despite the United States outspending other developed nations on healthcare, our comparative analysis reveals a grim picture: the U.S. leads in avoidable deaths per 100,000 people. This stark reality illuminates a significant disconnect; higher spending does not equate to better healthcare outcomes. Instead, it often translates into higher profits for insurance companies at the expense of patient care.</p>
+            </div>
+        </div>
+
+        <h2> Comparison of Quality of Healthcare Factors Among Countries </h2>
+       
+        <section class="col">
+            <div class="graphlegend new-gray">
+            <div class="newgraphstogether graph-text">
+                    <div class="graph" data-graph-type="scatter1">
+                        <h3 class="graph-text">Percent of GDP Spent on Healthcare</h3>
+                        <svg id="svggdp"></svg>
+                    </div>
+                    <div id="tooltipGDP" class="tooltip" style="display: none;"></div>
+
+                    <div class="graph" data-graph-type="scatter2">
+                        <h3 class="graph-text">Avoidable Deaths per 100,000 people</h3>
+                        <svg id="svgavoid"></svg>
+                    </div>
+                    <div id="tooltipDeaths" class="tooltip" style="display: none;"></div>
+
+            </div>
+            <div class="legend-container newh3">
+                <div class="legend-items graph-text">
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #FF0000;"></span>US
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #8a5d43;"></span>UK
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #f09200;"></span>GER
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #00b945;"></span>FRA
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #ed8cc0;"></span>JPN
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #5b2c83;"></span>KOR
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #59d5f7;"></span>NZ
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #e535ab;"></span>SWE
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #0f2080;"></span>CAN
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #f5e042;"></span>AUS
+                    </div>
+                </div>
+            </div>
+        </div>
+        </section>
+        
+
+       
+
+        <div class="middlepls" id="nobottom" style="margin-top: 10%;">
+            <div class="bodytext" style="position: sticky; top: 0;">
+                <h2>Exploring Denied Claims: Who benefited the most from them in 2023?
+                </h2>
+                <p>
+                    Following the scrutiny of healthcare quality, another critical issue emerges: the 
+                    alarming rate of denied claims by insurance companies. Let's delve into the denial patterns 
+                    among leading insurers, exploring how such practices boost their profits at the expense of consumers. 
+                    We aim to expose the struggles of policyholders who frequently have to fight for the coverage they paid 
+                    for and deserve. This ongoing battle not only exacerbates financial burdens but also deepens the public's mistrust and resentment towards these powerful healthcare entities.
+                    </p>
+            </div>
+        </div>
+        <section id="scrolly">
+            <article>
+                <div class="step" data-step="0">
+                    <div class="scale-labels">
+                        <h3>Kaiser Permanente?</h3>
+                        <p>Industry average denials.</p>
+                    </div>
+                </div>
+                <div class="step" data-step="1">
+                    <div class="scale-labels">
+                    <h3>Aetna?</h3>
+                    <p>Wow, that's a lot of claims denied.</p>
+                    </div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="scale-labels">
+                    <h3>Anthem?</h3>
+                    <p>Even more than Aetna, yikes</p>
+                    </div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="scale-labels">
+                    <h3>Medica?</h3>
+                    <p>So many claims denied, and for what? The profit isn't even as high as the first 3.</p>
+                    </div>
+                </div>
+                <div class="step" data-step="4">
+                    <div class="scale-labels">
+                    <h3>UnitedHealth Group?</h3>
+                    <p>32% of claims denied??? 371 Billion in profit??? I wonder if this is why people are so numbed by their CEO dying.</p>
+                    </div>
+                </div>
+            </article>
+
+            <figure>
+                <div class="graph" data-graph-type="bar">
+                    <svg class="scales"></svg>
+                </div>
+            </figure>
+        </section>
+    <!-- </main> -->
+
+
+    <!---------------------------------------- MONOPOLY GRAPH ------------------------------------------->
+    <div class="middlepls" id="nobottom" style="margin-top: 10%;">
+    <div class="bodytext">
+        <h2>Let's uncover the hidden practices of UnitedHealth Group!
+        </h2>
+        <p> Was all the money earned ethically or did come at the cost of denying essential healthcare services to those in need? </p>
+        <h3 class="graph-text">2023 UnitedHealth Group Misconduct Healthopoly</h3>
+    </div>
+</div>
+    <section id="scrolly-monopoly">
+        <div class="left">
+            <p id="event-text" style="margin-top: 0;"></p>
+            <img id="dice" src="dice_static.png" alt="Roll Dice">
+        </div>
+        <div id="monopoly-board-container">
+            <svg class="monopoly" id="monopoly-board" width="100%" height="100%" viewBox="0 0 600 600">
+                <image href="1Board.svg" x="0" y="0" width="100%" height="100%" id="board"/>
+                <!-- Rectangles for highlighting -->
+                <rect class="highlight" width="48.98" height="80" visibility="hidden"/>
+                <image id="man" href="man_2.svg" width="50" height="50"/>
+            </svg>
+        </div>               
+    </section>
+</main>
+
+<!-- story selection  -->
+<h2 style="margin-top: 10%;">
+    Understanding Public Sentiment: Tap on a person to discover their Healthcare Access story!
+</h2>
+<div>
+<div class="healthcare-section">
+    <div id="image-container"></div>
+    <div id="story"></div>
+    <footer class="footnote" style="color: #3b3b3b; padding-left: 30px; padding-right: 30px;">
+        Note: All stories are sourced from YouTube, Reddit, and TikTok and have been anonymized. Images do not necessarily represent the actual individuals behind the stories.
+    </footer>
+</div>
+<div style="display: flex; justify-content: center;">
+<p style="max-width: 700px;">By connecting these dots, it becomes clearer why an act of violence against a figurehead of the health insurance industry could be seen as an act of heroism against a perceived villainy. This story is not just about a single event or individual but reflects a broader societal struggle with a healthcare system that often prioritizes profit over people.</p>
+</div>
+</div>
+
+<script>
+// Load CSV data
+d3.csv("healthcare_stories_6.csv").then(function(data) {
+    const images = d3.select("#image-container").selectAll("img")
+        .data(data)
+        .enter()
+        .append("img")
+        .attr("src", function(d) { return `${d.Image}`; })
+        .attr("alt", "Story Image")
+        .on("click", function(event, d) {
+            d3.selectAll('.healthcare-section img').classed("active", false);
+            d3.select(this).classed("active", true);
+            d3.select("#story")
+                .style("display", "block")
+                .html(d.Story)
+                .style("left", `${event.pageX}px`)
+                .style("top", `${event.pageY}px`);
+        });
+
+    d3.select("body").on("click", function(event) {
+        if (!event.target.closest("#image-container")) {
+            d3.selectAll('.healthcare-section img').classed("active", false);
+            d3.select("#story").style("display", "none");
+        }
+    });
+});
+
+</script>
+
+<!-- monopoly script -->
+    <script>
+        let currentPosition = 0;
+        let currentRotation = 0;
+        let positions = [];
+        let abuseEvents = [];
+
+        // Load CSV data
+        d3.csv("united_abuse_tracker.csv").then(data => {
+            abuseEvents = data.filter(d => d.Date.split('/')[2] === '23')
+                            .sort((a, b) => new Date(a.Date) - new Date(b.Date));
+            calculatePositions();
+    });
+        
+    
+        document.addEventListener("DOMContentLoaded", function() {
+            updateInitialPosition();
+            setupDice();
+            window.addEventListener("resize", updateBoardDimensions);
+        });
+
+    function updateInitialPosition() {
+        const svgContainer = document.querySelector('#monopoly-board');
+        const boardWidth = svgContainer.clientWidth;
+        const boardHeight = svgContainer.clientHeight; //source: https://www.w3schools.com/jsref/prop_element_clientwidth.asp
+
+        svgContainer.setAttribute("viewBox", `0 0 ${boardWidth} ${boardHeight}`);
+            
+        // Calculating the initial bottom-right position only once
+        const tileWidth = boardWidth / 12.2;
+        const tileHeight = boardHeight / 7.5;
+        const startX = boardWidth - tileWidth;
+        const startY = boardHeight - tileHeight;
+        const startRectX = startX - (tileWidth * 0.5);
+        const startRectY = startY - tileHeight;
+
+        positions = [
+            { x: startX, y: startY * 1.03, rectX: startRectX, rectY: startRectY, width: tileWidth, height: tileHeight, visible: 'hidden' },  // Initial hidden position
+            { x: startX - tileWidth * 3.5, y: startY * 1.05, rectX: startX - tileWidth * 3.6, rectY: startRectY + tileHeight * 0.98, width: tileWidth, height: tileHeight, visible: 'visible' }, // denial of care
+            { x: startX - tileWidth * 5.5, y: startY * 1.05, rectX: startX - tileWidth * 5.6, rectY: startRectY + tileHeight * 0.98, width: tileWidth, height: tileHeight, visible: 'visible' }, // anti
+            { x: startX - tileWidth * 7.5, y: startY * 1.05, rectX: startX - tileWidth * 7.6, rectY: startRectY + tileHeight * 0.98, width: tileWidth, height: tileHeight, visible: 'visible' }, // denial of care
+            { x: startX - tileWidth * 3.5, y: startY * 1.05, rectX: startX - tileWidth * 3.6, rectY: startRectY + tileHeight * 0.98, width: tileWidth, height: tileHeight, visible: 'visible' }, // denial of care
+            { x: startX - tileWidth * 4.5, y: startY * 1.05, rectX: startX - tileWidth * 4.6, rectY: startRectY + tileHeight * 0.98, width: tileWidth, height: tileHeight, visible: 'visible' }, // denial of care
+            { x: startX - tileWidth * 3.5, y: startY * 1.05, rectX: startX - tileWidth * 3.6, rectY: startRectY + tileHeight * 0.98, width: tileWidth, height: tileHeight, visible: 'visible' }, // denial of care
+            { x: startX - tileWidth * 3.5, y: startY * 1.05, rectX: startX - tileWidth * 3.6, rectY: startRectY + tileHeight * 0.98, width: tileWidth, height: tileHeight, visible: 'visible' }, // denial of care
+            { x: startX - tileWidth * 8.5, y: startY * 1.05, rectX: startX - tileWidth * 8.6, rectY: startRectY + tileHeight * 0.98, width: tileWidth, height: tileHeight, visible: 'visible' }, // anti
+            
+        ];
+        moveMan();
+    }
+    
+    function setupDice() {
+    const dice = document.getElementById("dice");
+    dice.addEventListener("click", function() {
+        dice.src = "dice.gif";
+        setTimeout(() => {
+            dice.src = "dice_static.png";
+            currentPosition = (currentPosition + 1) % positions.length;
+            moveMan();
+            if ([0, 4, 6, 7, 9].includes(currentPosition)) {
+                rotateBoard();
+            }
+        }, 1000);
+    });
+}
+
+    function moveMan() {
+        const man = document.getElementById("man");
+        const highlight = document.querySelector(".highlight");
+        const pos = positions[currentPosition];
+    
+        man.setAttribute("x", pos.x);
+        man.setAttribute("y", pos.y);
+        highlight.setAttribute("x", pos.rectX);
+        highlight.setAttribute("y", pos.rectY);
+        highlight.setAttribute("width", pos.width);
+        highlight.setAttribute("height", pos.height);
+        highlight.style.visibility = pos.visible;
+
+        updateEventText(currentPosition);
+    }
+
+    function rotateBoard() {
+        const svgContainer = document.querySelector('#monopoly-board');
+        const boardWidth = svgContainer.clientWidth;
+        const boardHeight = svgContainer.clientHeight;
+        currentRotation -= 90;
+        
+        const board = document.getElementById("board");
+        board.style.transition = "transform 0.5s ease-in-out";
+        board.style.transformOrigin = `${boardWidth / 2}px ${boardHeight / 2}px`;
+        board.style.transform = `rotate(${currentRotation}deg)`;
+    }
+
+    function updateEventText(position) {
+        const textElement = document.getElementById("event-text");
+        if (position === 0) {
+            textElement.innerHTML = "Roll the Dice!"
+        }
+        else if (position === positions.length - 2) {
+            textElement.innerHTML = "In 2023, UnitedHealth Group reportedly had a revenue of $371 billion.";
+        } else {
+            const event = abuseEvents[position];
+            if (event) {
+                textElement.innerHTML = `On ${event.Date}, UHG committed ${event.Category}. ${event.Details}`;
+            } else {
+                textElement.innerHTML = "In 2023, UnitedHealth Group reportedly had a revenue of $371 billion.";
+            }
+        }
+    }
+
+    </script>
+
+    
+    <script> //MIKAS SCRIPT FOR BAR AND LINE
+         const margin = {top: 30, right: 100, bottom: 30, left: 100},
+            width = 960 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+    
+        const svg = d3.select('.graph[data-graph-type="line"] svg')
+            .attr('viewBox', `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+            .attr('preserveAspectRatio', 'xMidYMid meet')
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`)
+            .style("color", "white");
+    
+        const x = d3.scaleLinear()
+            .domain([2011, 2022])
+            .range([0, width]);
+    
+        const y = d3.scaleLinear()
+            .domain([0, 324.16])
+            .range([height, 0]);
+    
+        const xAxis = svg.append("g")
+            .attr("transform", `translate(0,${height})`)
+            .call(d3.axisBottom(x).tickFormat(d3.format("d")))
+            .selectAll("text")  // select all text elements for the x axis
+            .style("font-size", "18px")
+            .style("fill","white");
+    
+        // const yAxis = svg.append("g")
+        //     .call(d3.axisLeft(y));
+    
+        const tooltip = d3.select('body').append('div')
+            .attr('class', 'tooltip')
+            .style('position', 'absolute')
+            .style('display', 'none')
+            .style('background', 'white')
+            .style('border', '1px solid #000')
+            .style('padding', '10px')
+            .style('border-radius', '5px')
+            .style('pointer-events', 'none');
+    
+        const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+        // const colorScale = d3.scaleOrdinal(d3.schemeSet3);
+
+        let companyColors = {};
+    
+        async function requestData() {
+            const data = await d3.csv("revenue_filtered2.csv", d => ({
+                year: +d.Year,
+                ...Object.fromEntries(Object.entries(d).slice(1).map(([key, value]) => [key, +value]))
+            }));
+
+            const yAxis = svg.append("g")
+            .call(d3.axisLeft(y).tickFormat(value => `${value}B`))
+            .selectAll("text")  // select all text elements for the x axis
+            .style("font-size", "18px")
+            .style("fill","white");
+    
+            const excludedKeys = new Set(['year', 'Year']);
+            const companies = Object.keys(data[0]).filter(k => !excludedKeys.has(k));
+            console.log("companies", companies)
+            let selectedCompanies = companies;
+
+            companies.forEach(function(d, i){
+                companyColors[d] = colorScale(i)
+            })
+
+            const checkboxesContainer = d3.select("#checkboxes-container");
+            checkboxesContainer.selectAll("*").remove();
+
+            const checkboxes = checkboxesContainer.selectAll("div").data(companies)
+                                                  .join("div") // changed from og code
+                                                  .attr("class", "checkbox-item")
+                                                  .style("padding", "10px 15px")
+                                                  .style("display", "flex")
+                                                  .style("align-items", "center");
+
+            checkboxes.append("input")
+                          .attr("type", "checkbox")
+                          .attr("id", d => d)
+                          .attr("value", d => d)
+                          .property("checked", (d, i) => i === 0 || i === 1 || i === 2 || i === 3 || i === 4 || i === 5)
+                          .style("height", "20px")
+                          .style("width", "20px")
+                          .style("accent-color", d => companyColors[d])
+                          .on("change", function(event, d) {
+                            handleCheckboxChange(event)
+                          })
+
+            checkboxes.append("label")
+                          .attr("for", d => d)
+                          .attr("class", "checkbox-label")
+                          .text(d => d)
+                          .style("color", d => companyColors[d])
+                
+
+            companies.forEach((company, index) => {
+    
+                const companyData = data.map(d => ({year: d.year, value: d[company]}));
+    
+                // Append lines for connection
+                svg.append("path")
+                    .datum(companyData)
+                    .attr("class", "line")
+                    .attr("fill", "none")
+                    .attr("stroke", colorScale(index))
+                    .attr("stroke-width", 4)
+                    .attr("stroke-opacity", 0.4)
+                    .attr("d", d3.line()
+                        .x(d => x(d.year))
+                        .y(d => y(d.value))
+                        .curve(d3.curveLinear))
+                    .attr("data-company", company)
+                    .attr("visibility", "hidden");
+                
+    
+                // Append circles for each data point
+                const circles = svg.append("g")
+                    .selectAll("circle")
+                    .data(companyData)
+                    .enter().append("circle")
+                    .attr("cx", d => x(d.year))
+                    .attr("cy", d => y(d.value))
+                    .attr("r", 5)
+                    .attr("fill", colorScale(index))
+                    .attr("data-company", company)
+                    .attr("visibility", "hidden")
+                    .on('mouseover', function(event, d) {
+                        tooltip.style('display', 'block')
+                            .html(`Year: ${d.year}<br>Revenue: ${d.value.toLocaleString()}`)
+                            .style('left', (event.pageX + 10) + 'px')
+                            .style('top', (event.pageY - 20) + 'px');
+                    })
+                    .on('mouseout', function() {
+                        tooltip.style('display', 'none');
+                    });
+            });
+        // new update function to adjust for multiple companies (not just all)
+        function update(selectedCompanies) {
+            d3.selectAll("[data-company]").attr("visibility", function() {
+                const company = this.getAttribute("data-company");
+                return (selectedCompanies.includes('all') || selectedCompanies.includes(company)) 
+                ? "visible" : "hidden";
+            })
+        }
+
+            function handleCheckboxChange(event) {
+                const companyName = event.target.value;
+
+                if (event.target.checked) {
+                    event.target.checked = true;
+                    selectedCompanies.push(companyName);
+                } else {
+                    selectedCompanies = selectedCompanies.filter(company => company !== companyName)
+                }
+
+                update(selectedCompanies);
+            }
+    
+            update('all'); // Initially show all points and lines
+        }
+
+        async function requestBarChartData() {
+        const svg = d3.select('.graph[data-graph-type="premiumbar"] svg')
+            .attr('viewBox', `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+            .attr('preserveAspectRatio', 'xMidYMid meet')
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`)
+            .style("color", "white");
+        
+        const tooltip = d3.select('.tooltip');
+
+        const data = await d3.csv("NHE_per_person.csv");  // Adjust path as necessary
+        const x = d3.scaleBand()
+            .range([0, width])
+            .padding(0.1)
+            .domain(data.map(d => d.Year));
+        const y = d3.scaleLinear()
+            .range([height, 0])
+            .domain([0, d3.max(data, d => +d['Average annual premiums for single coverage'])]);
+
+        svg.append("g")
+            .attr("transform", `translate(0,${height})`)
+            .call(d3.axisBottom(x))
+            .selectAll("text")  // select all text elements for the x axis
+            .style("font-size", "18px")
+            .style("fill","white");
+        svg.append("g")
+            .call(d3.axisLeft(y))
+            .selectAll("text")  // select all text elements for the x axis
+            .style("font-size", "18px")
+            .style("fill","white");
+        
+        let currentlySelectedYear = null;
+
+        svg.selectAll(".bar")
+            .data(data)
+            .enter().append("rect")
+            .attr("class", "bar")
+            .attr("x", d => x(d.Year))
+            .attr("y", d => y(+d['Average annual premiums for single coverage']))
+            .attr("width", x.bandwidth())
+            .attr("height", d => height - y(+d['Average annual premiums for single coverage']))
+            .attr("fill", "white")
+            .attr("opacity", 1)  
+            // add hover and click interaction between bar and scatter
+            .on('mouseover', function(event, d) {
+            tooltip.transition()
+                .duration(100)
+                .style('opacity', 1);
+
+            d3.select(this)
+                .style('cursor', 'pointer');
+
+            tooltip.html(`Year: ${d.Year}<br>Premium: $${d['Average annual premiums for single coverage']}`)
+                .style('left', (event.pageX) + 'px')
+                .style('top', (event.pageY - 28) + 'px');
+            })
+            .on('mouseout', function(d) {
+                tooltip.transition()
+                    .style('opacity', 0);
+
+                d3.select(this)
+                    .style('cursor', 'default');
+            })
+            .on('click', function(event, d) {
+                if (currentlySelectedYear === d.Year) {
+                    svg.selectAll(".bar").attr("opacity", 1); 
+                    d3.selectAll('.graph[data-graph-type="line"] circle').attr("opacity", 1);
+                    currentlySelectedYear = null; 
+                } else {
+                    currentlySelectedYear = d.Year;
+                    svg.selectAll(".bar")
+                        .attr("opacity", b => b.Year === d.Year ? 1 : 0.3);
+                    d3.selectAll('.graph[data-graph-type="line"] circle')
+                        .attr("opacity", dCircle => dCircle.year == d.Year ? 1 : 0.3);
+                }
+    }); }
+
+    
+        requestData();
+        requestBarChartData();
+
+    </script>
+
+<script> //SCATTER FOR GDP
+
+    // Append the svg object to the div
+    const gdpsvg = d3.select("#svggdp")
+        .attr('viewBox', `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+        .attr('preserveAspectRatio', 'xMidYMid meet')
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`)
+        .style("color", "white");
+
+    
+    const tooltipGDP = d3.select("#tooltipGDP");
+
+    const countryColorMap = {
+    "US": "#FF0000",  // Red color for USA as requested
+    "UK": "#8a5d43",   // Brown for UK
+    "GER": "#f09200",  // Orange for Germany
+    "FRA": "#00b945",  // Green for France
+    "JPN": "#ed8cc0",  // Light Pink for Japan
+    "KOR": "#5b2c83",  // Purple for Korea
+    "NZ": "#59d5f7",   // Light Blue for New Zealand
+    "SWE": "#e535ab",  // Pink for Sweden
+    "CAN": "#0f2080",  // Dark Blue for Canada
+    "AUS": "#f5e042"   // Yellow for Australia
+    };
+
+
+
+    // Load data from CSV file
+    d3.csv("merged_data.csv").then(function(data) {
+
+        // Format the data and filter out zeroes
+        data = data.filter(d => +d.GDP > 0).map(d => {
+            return {
+                Country: d.Country,
+                Year: +d.Year,
+                GDP: +d.GDP  // Assuming 'GDP' is the correct field name for GDP spending
+            };
+        });
+
+        // Group data by country
+        const sumstat = d3.group(data, d => d.Country);
+
+        // Add X axis
+        const x = d3.scaleLinear()
+            .domain(d3.extent(data, d => d.Year))
+            .range([0, width]);
+        gdpsvg.append("g")
+            .attr("transform", `translate(0, ${height})`)
+            .call(d3.axisBottom(x).tickFormat(d3.format("d")))
+            .selectAll("text") 
+            .style("font-size", "18px")
+            .style("fill", "white");
+
+        // Add Y axis
+        const y = d3.scaleLinear()
+            .domain([0, d3.max(data, d => d.GDP)])  // Update to the correct domain
+            .range([height, 0]);
+        gdpsvg.append("g")
+            .call(d3.axisLeft(y))
+            .selectAll("text") 
+            .style("font-size", "18px")
+            .style("fill", "white");
+
+        // Add a color scale for different countries
+        const color = d3.scaleOrdinal()
+            .domain(data.map(d => d.Country))
+            .range(d3.schemeTableau10);
+
+        // Add line paths for each country
+            const line = d3.line()
+            .x(d => x(d.Year))
+            .y(d => y(d.GDP))
+            .defined(d => d.GDP > 0); // Define the line only for non-zero values
+
+        gdpsvg.selectAll(".line")
+            .data(sumstat)
+            .enter()
+            .append("path")
+            .attr("fill", "none")
+            .attr("stroke", d => countryColorMap[d[0]])
+            .attr("stroke-width", 1.5)
+            .attr("stroke-opacity", 0.4)
+            .attr("d", d => line(d[1]));
+
+        // Add dots for non-zero data points
+        gdpsvg.append("g")
+            .selectAll("dot")
+            .data(data)
+            .enter()
+            .append("circle")
+            .attr("cx", d => x(d.Year))
+            .attr("cy", d => y(d.GDP))
+            .attr("r", 5)
+            .style("fill", function(d) { return countryColorMap[d.Country]; })  // Applying the country-specific color
+            .on('mouseover', function(event, d) {
+                tooltipGDP.style('display', 'block')
+                    .html(`${d.Year}<br>${d.Country}<br>${d.GDP}%`)
+                    .style('left', (event.pageX + 10) + 'px')
+                    .style('top', (event.pageY - 20) + 'px');
+            })
+            .on('mouseout', function() {
+                tooltipGDP.style('display', 'none');
+            });
+
+    }).catch(function(error) {
+        console.log(error);
+    });
+</script>
+
+<script> //SCATTERPLOT FOR AVOIDABLE DEATHS
+    // Append the svg object to the div
+    const avoidsvg = d3.select("#svgavoid")
+        .attr('viewBox', `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+        .attr('preserveAspectRatio', 'xMidYMid meet')
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`)
+        .style("color", "white");
+
+    const tooltipDeaths = d3.select("#tooltipDeaths");
+
+
+    // Load data from CSV file
+    d3.csv("merged_data.csv").then(function(data) {
+
+        // Format the data and filter out zeroes
+        data = data.filter(d => +d["Avoidable Deaths per 100k"] > 0).map(d => {
+            return {
+                Country: d.Country,
+                Year: +d.Year,
+                "Avoidable Deaths per 100k": +d["Avoidable Deaths per 100k"]
+            };
+        });
+
+        // Group data by country
+        const sumstat = d3.group(data, d => d.Country);
+
+        // Add X axis
+        const x = d3.scaleLinear()
+            .domain(d3.extent(data, d => d.Year))
+            .range([ 0, width ]);
+        avoidsvg.append("g")
+            .attr("transform", `translate(0, ${height})`)
+            .call(d3.axisBottom(x).tickFormat(d3.format("d")))
+            .selectAll("text") 
+            .style("font-size", "18px");;
+
+        // Add Y axis
+        const y = d3.scaleLinear()
+            .domain([0, d3.max(data, d => d["Avoidable Deaths per 100k"])])
+            .range([ height, 0]);
+        avoidsvg.append("g")
+            .call(d3.axisLeft(y))
+            .selectAll("text") 
+            .style("font-size", "18px");
+
+        // Add a color scale for different countries
+        const color = d3.scaleOrdinal()
+            .domain(["AUS", "CAN", "FRA", "GER", "JPN", "KOR", "NET", "NOR", "NZ", "SWE", "SWI", "UK", "US"])
+            .range(d3.schemeTableau10);
+
+        // Add line paths for each country
+        const line = d3.line()
+            .x(d => x(d.Year))
+            .y(d => y(d["Avoidable Deaths per 100k"]))
+            .defined(d => d["Avoidable Deaths per 100k"] > 0); // Define the line only for non-zero values
+
+        avoidsvg.selectAll(".line")
+            .data(sumstat)
+            .enter()
+            .append("path")
+            .attr("fill", "none")
+            .attr("stroke", d => countryColorMap[d[0]])
+            .attr("stroke-width", 1.5)
+            .attr("stroke-opacity", 0.4)
+            .attr("d", d => line(d[1]));
+
+        // Add dots for non-zero data points
+        avoidsvg.append("g")
+            .selectAll("dot")
+            .data(data)
+            .enter()
+            .append("circle")
+            .attr("cx", d => x(d.Year))
+            .attr("cy", d => y(d["Avoidable Deaths per 100k"]))
+            .attr("r", 5)
+            .style("fill", d => countryColorMap[d.Country])
+            .on('mouseover', function(event, d) {
+                tooltipDeaths.style('display', 'block')
+                    .html(`${d.Year}<br>${d.Country}<br>${d["Avoidable Deaths per 100k"]}`)
+                    .style('left', (event.pageX + 10) + 'px')
+                    .style('top', (event.pageY - 20) + 'px');
+            })
+            .on('mouseout', function() {
+                tooltipDeaths.style('display', 'none');
+            });
+
+    }).catch(function(error) {
+        console.log(error);
+    });
+</script>
+
+   
+
+    <!-------------------------------------------- SCALE BAR GRAPH ---------------------------------------------->
+    <script>
+        const companies = ['Kaiser Permanente', 'Aetna', 'Anthem', 'Medica', 'UnitedHealth Group']
+		// Scrolling library source: https://github.com/russellsamora/scrollama?tab=readme-ov-file
+		var main = d3.select("main");
+		var scrolly = main.select("#scrolly");
+		var figure = scrolly.select("figure");
+		var article = scrolly.select("article");
+		var step = article.selectAll(".step");
+
+		// initialize the scrollama
+		var scroller = scrollama();
+
+		// generic window resize listener event
+		function handleResize() {
+			// 1. update height of step elements
+			var stepH = Math.floor(window.innerHeight * 0.75);
+			step.style("height", stepH + "px");
+            
+			var figureHeight = window.innerHeight / 1.4;
+			var figureMarginTop = (window.innerHeight - figureHeight) / 2;
+			figure
+				.style("height", figureHeight + "px")
+				.style("top", figureMarginTop + "px");
+
+			// 3. tell scrollama to update new element dimensions
+			scroller.resize();
+		}
+
+		// scrollama event handlers
+		function handleStepEnter(response) {
+			console.log(response);
+			
+            updateChart(companies[response.index]);
+		}
+
+		function init() {
+			handleResize();
+
+			scroller
+				.setup({
+					step: "#scrolly article .step",
+					offset: 0.33,
+					debug: false
+				})
+				.onStepEnter(handleStepEnter);
+		}
+
+		// kick things off
+		init();
+
+        function updateChart(selectedCompany) {
+            const selectedData = revClaimsData.find(d => d.Company === selectedCompany);
+
+            // Constants for circle and bar properties
+            const circleSize = 20; // Diameter of each circle
+            const circleSpacing = 5; // Space between circles in a row
+            const rowHeight = circleSize + 5; // Space between rows
+            const circlesPerRow = 3; // Number of circles in each row
+            const deniedValue = +selectedData["Denied Claims"]; // Proportion of denied claims
+            const totalCircles = Math.ceil(deniedValue * 100); // Example: Scale 0-1 to total circles
+            const totalRows = Math.ceil(totalCircles / circlesPerRow);
+            const xStart = xScale("Denied Claims") + (xScale.bandwidth() - (circlesPerRow * (circleSize + circleSpacing))) / 2;
+
+            // Update the revenue bar
+            bararea.select(".bar-revenue")
+                .attr("x", xScale("Revenue (USD)"))
+                .attr("width", xScale.bandwidth())
+                .transition()
+                .duration(500)
+                .attr("y", yScaleRevenue(+selectedData["Revenue (USD)"]))
+                .attr("height", barChartHeight - yScaleRevenue(+selectedData["Revenue (USD)"]));
+
+            // Count existing circles
+            const existingCircles = bararea.selectAll(".circle-denied").size();
+
+            // Add new circles if needed
+            if (existingCircles < totalCircles) {
+                for (let i = existingCircles; i < totalCircles; i++) {
+                    const rowIndex = Math.floor(i / circlesPerRow);
+                    const columnIndex = i % circlesPerRow;
+
+                    const finalYPosition = barChartHeight - rowHeight * (rowIndex + 1); // Calculate final Y position
+
+                    bararea.append("image")
+                        .attr("class", "circle-denied")
+                        .attr("xlink:href", "denied.svg")
+                        .attr("x", xStart + columnIndex * (circleSize + circleSpacing))
+                        .attr("y", 0) // Start animation from the top
+                        .attr("width", circleSize)
+                        .attr("height", circleSize)
+                        .attr("opacity", 0) // Start invisible
+                        .transition()
+                        .duration(500)
+                        .delay((i - existingCircles) * 50) // Stagger animation for new circles only
+                        .attr("y", finalYPosition) // Drop to final Y position
+                        .attr("opacity", 1); // Fade in
+                }
+            }
+
+            // Remove extra circles if needed
+            if (existingCircles > totalCircles) {
+                bararea.selectAll(".circle-denied")
+                    .filter((_, i) => i >= totalCircles) // Select circles beyond the new total
+                    .transition()
+                    .duration(500)
+                    .attr("opacity", 0) // Fade out
+                    .remove(); // Remove from DOM
+            }
+
+            // Update revenue label
+            d3.select(".label-revenue")
+                .transition()
+                .duration(500)
+                .attr("y", yScaleRevenue(+selectedData["Revenue (USD)"]) - 10)
+                .attr("x", 238)
+                .text(`$${(+selectedData["Revenue (USD)"] / 1e9).toFixed(1)}B`) // Format as billions
+                .style("fill", "white")
+                .style("font-size", "1.2rem");
+
+            // Update denied claims label
+            d3.select(".label-denied-claims")
+                .transition()
+                .duration(500)
+                .attr("y", barChartHeight - rowHeight * totalRows - 10) // Position above top row of circles
+                .text(`${Math.round(deniedValue * 100)}%`) // Convert to percentage
+                .style("fill", "white")
+                .style("font-size", "1.2rem");
+                
+        }
+
+
+
+        let revClaimsData, bararea, xScale, yScaleRevenue, yScaleDeniedClaims, barChartHeight;
+
+        const requestBarData = async function() {
+            revClaimsData = await d3.csv('insurance_claims_revenue.csv');
+            console.log(revClaimsData)
+
+            d3.select("#companyDropdown")
+                .selectAll("option")
+                .data(revClaimsData)
+                .enter()
+                .append("option")
+                .attr("value", d => d.Company)
+                .text(d => d.Company);    
+                
+            const barmargin = {top:20, right:20, bottom:285, left:20};
+            const barChartWidth = 960 - margin.left - margin.right;
+            barChartHeight = 500 - margin.top - margin.bottom;
+
+            const barsvg = d3.select('.graph[data-graph-type="bar"] svg')
+                .attr('viewBox', `0 0 ${width + barmargin.left + barmargin.right} ${height + barmargin.top + barmargin.bottom}`)
+                .attr('preserveAspectRatio', 'xMidYMid meet')
+                // .attr('class', 'bar-chart-background')
+                .attr('viewBox', `0 0 ${width + barmargin.left + barmargin.right} ${height + barmargin.top + barmargin.bottom}`)
+                .attr('preserveAspectRatio', 'xMidYMid meet');
+
+            bararea = barsvg.append("g")
+                            .attr("transform", "translate("+barmargin.left+","+barmargin.top+")");
+
+            xScale = d3.scaleBand()
+                .domain(["Revenue (USD)", "Denied Claims"])
+                .range([0, barChartWidth])
+                .padding(0.7);
+
+            yScaleRevenue = d3.scaleLinear()
+                .domain([0, 400000000000])
+                .range([barChartHeight, 0]);
+
+            yScaleDeniedClaims = d3.scaleLinear()
+                .domain([0, .5])
+                .range([barChartHeight, 0]);
+
+            bararea.append("g").attr("class", "y-axis-revenue")
+                    .attr("transform", `translate(100, -5)`);
+            bararea.append("g").attr("class", "y-axis-denied-claims")
+                    .attr("transform", `translate(${barChartWidth-90}, -5)`);
+
+            bararea.append("rect").attr("class", "bar-revenue").attr("fill", "crimson");
+            bararea.append("rect").attr("class", "bar-revenue").attr("fill", "crimson");
+
+            bararea.append("text")
+                .attr("class", "label-revenue")
+                .attr("x", xScale("Revenue (USD)") + xScale.bandwidth() / 2)
+                .attr("y", yScaleRevenue(300000000000) - 5) // Position above the bar
+                .attr("text-anchor", "middle")
+                .attr("fill", "white")
+                .text("$300B"); // Example value, replace dynamically
+
+            bararea.append("text")
+                .attr("class", "label-denied-claims")
+                .attr("x", xScale("Denied Claims") + xScale.bandwidth() / 2)
+                .attr("y", yScaleDeniedClaims(0.5) - 5) // Position above the bar
+                .attr("text-anchor", "middle")
+                .attr("fill", "white")
+                .text("50%");
+
+            barsvg.append("image")
+                .attr("xlink:href", "scale-ba.svg") 
+                .attr("x", barChartWidth / 4) 
+                .attr("y", barChartHeight + barmargin.top + 10) 
+                .attr("width", (barChartWidth / 2 -70))
+                .attr("height", 100)
+                .attr("transform", `translate(55, -3)`);
+
+            barsvg.append("image")
+                .attr("xlink:href", "scale_stick_3.svg") 
+                .attr("x", barChartWidth / 4) 
+                .attr("y", barChartHeight + barmargin.top + 10) 
+                .attr("width", (barChartWidth / 2))
+                .attr("height", 310)
+                .attr("transform", `translate(20, -35)`);
+
+            barsvg.append("image")
+                .attr("xlink:href", "scale_plate1_5.svg") 
+                .attr("x", barChartWidth / 4) 
+                .attr("y", barChartHeight + barmargin.top + 10) 
+                .attr("width", (barChartWidth / 6))
+                .attr("height", 220)
+                .attr("transform", `translate(7, -75)`);
+
+            barsvg.append("image")
+                .attr("xlink:href", "scale_plate2_4.svg") 
+                .attr("x", barChartWidth / 4) 
+                .attr("y", barChartHeight + barmargin.top + 10) 
+                .attr("width", (barChartWidth / 6))
+                .attr("height", 220)
+                .attr("transform", `translate(290, -75)`);
+
+            barsvg.append("image")
+                .attr("x", barChartWidth / 10) 
+                .attr("y", barChartHeight + barmargin.top + 10) 
+                .attr("width", (barChartWidth / 1.75))
+                .attr("transform", `translate(-240, 35)`)
+                .style('overflow', 'default');
+
+            barsvg.append("image")
+                .attr("x", barChartWidth / 10) 
+                .attr("y", barChartHeight + barmargin.top + 10) 
+                .attr("width", (barChartWidth / 1.75))
+                .attr("transform", `translate(545, -510)`)
+                .style('overflow', 'visible');
+
+            updateChart(revClaimsData[8].Company);
+
+            d3.select("#companyDropdown").on("change", function () {
+                const selectedCompany = d3.select(this).property("value");
+                updateChart(selectedCompany);
+            });
+        }
+
+        requestBarData();
+    </script>
+
+    <!-- Heat map code -->
+    <script> 
+        const heatwidth = 900;
+        const heatheight = 400;
+        const heatmargin = {top:20, right:20, bottom:20, left:20};
+        const mapWidth = heatwidth - heatmargin.left - heatmargin.right;
+        const mapHeight = heatheight - heatmargin.top - heatmargin.bottom;
+
+        // const heatmargin = {top: 30, right: 100, bottom: 30, left: 50},
+        //       heatwidth = 960 - heatmargin.left - heatmargin.right,
+        //       heatheight = 500 - heatmargin.top - heatmargin.bottom;
+
+        const heatsvg = d3.selectAll('div#heatmapdiv').append('svg')
+                .attr('viewBox', `0 0 ${heatwidth + heatmargin.left + heatmargin.right} ${heatheight + heatmargin.top + heatmargin.bottom}`)
+                .attr('preserveAspectRatio', 'xMidYMid meet')
+                // .attr("id", "heatsvg")
+                .append("g")
+                .attr("transform", `translate(${heatmargin.left},${heatmargin.top})`);
+        // const heatsvg = d3.select("#heatmap");
+        const map = heatsvg.append("g")
+                           .attr("transform", "translate("+heatmargin.left+","+heatmargin.top+")");
+
+        const requestHeatData = async function() {
+            // topojson file taken from class notes; Mike Bostock
+            const us = await d3.json("us-smaller.json");
+            var states = topojson.feature(us, us.objects.states);
+            var statesMesh = topojson.mesh(us, us.objects.states);
+            var projection = d3.geoAlbersUsa().fitSize([mapWidth, mapHeight], states);
+            var path = d3.geoPath().projection(projection);
+
+            let graticule = d3.geoGraticule10();
+            //console.log(graticule);
+            map.append("path").attr("class", "graticule").attr("d", path(graticule));
+
+            let statePaths = map.selectAll("path.state").data(states.features)
+                                .join("path")
+                                .attr("class", "state")
+                                .attr("note", d => d.id)
+                                .attr("d", path)
+                                .on("mouseover", mouseEntersState)
+                                .on("mouseout", mouseLeavesState);
+
+            map.append("path").datum(statesMesh)
+                .attr("class", "outline")
+                .attr("d", path);
+
+            const oldDebtData = await d3.csv("med_debt_landscape_state.csv", d3.autoType);
+            const nationalData = await d3.csv("changing_med_debt_landscape_national.csv", d3.autoType);
+            let debtData = [];
+            oldDebtData.forEach( d => {
+                if (d.year != 2023) {
+                    debtData.push(d);
+                }
+            })
+            console.log(debtData);
+
+            const minMax = d3.extent(debtData, d => d.median_medical_debt)
+            const colorScale = d3.scaleQuantize().domain(minMax).range(d3.schemeReds[9])
+
+            function updateHeatMap(yearKey) {
+                let yearDebt = []
+                debtData.forEach( d=> {
+                    if (d.year == yearKey) {
+                        yearDebt.push(d);
+                    }
+                })
+                console.log(yearKey, yearDebt);
+
+                var yearDict = {};
+                yearDebt.forEach( d => {
+                    yearDict[d.state_fips] = d;
+                });
+                console.log("dictionary", yearDict);
+
+                statePaths.each(function(d) {
+                    id = d.id;
+                    if (yearDict[id]) {
+                        d.properties.median_medical_debt = yearDict[id].median_medical_debt;
+                        d.properties.state_abbreviation = yearDict[id].state_abbreviation;
+                    }
+                })
+                
+                map.selectAll(".state")
+                   .transition()
+                   .duration(350)
+                   .ease(d3.easeLinear)
+                   .style("fill", d => colorScale(d.properties.median_medical_debt))
+            }
+
+            updateHeatMap(2011);
+            
+            drawLegend("#colorLegend", colorScale);
+
+            let tooltipWidth = 70;
+            let tooltipHeight = 40;
+
+            let momesh = map.append("path")
+                            .attr("class", "mouseover outline")
+                            .style("stroke", "black")
+                            .style("stroke-width", 3)
+                            .attr("d", "");
+            
+            let tooltip = map.append("g")
+                             .attr("class", "tooltip")
+                             .attr("visibility", "hidden");
+            
+
+            tooltip.append("rect")
+                //    .attr("class", "tooltip")
+                   .attr("fill", "white")
+                   .attr("opacity", 1)
+                   .attr("x", -tooltipWidth / 2.0)
+                   .attr("y", 0)
+                   .attr("width", tooltipWidth)
+                   .attr("height", tooltipHeight)
+                   .style("border", "1px solid #000")
+                   .style("border-radius", "5px")
+                   .style("padding", "10px")
+                   
+            
+            let txt = tooltip.append("text")
+                             .attr("fill", "black")
+                             .attr("text-anchor", "middle")
+                             .attr("alignment-baseline", "hanging")
+                             .attr("x", 0)
+                             .attr("y", 8);
+        
+            let txt2 = tooltip.append("text")
+                              .attr("fill", "black")
+                              .attr("text-anchor", "middle")
+                              .attr("alignment-baseline", "hanging")
+                              .attr("x", 0)
+                              .attr("y", 22)
+            
+            function mouseEntersState(event, d) {
+                tooltip.style("visibility", "visible")
+
+                let state = d3.select(this);
+                // console.log(d.properties.state_abbreviation)
+                // console.log(d.properties.median_medical_debt)
+                let updatedText = "$" + d.properties.median_medical_debt
+                // console.log(updatedText)
+                txt.text(d.properties.state_abbreviation)
+                txt2.text(updatedText)
+
+                let bounds = path.bounds(state.datum());
+                let xPos = (bounds[0][0]+bounds[1][0])/2.0;
+                let yPos = bounds[1][1]-10;
+                tooltip.attr("transform", `translate(${xPos},${yPos})`);
+
+            }
+
+            function mouseLeavesState(event, d) {
+                tooltip.style("visibility", "hidden");
+                momesh.attr("d", "");
+            }
+
+            // taken from class notes; Prof. Jeff Rzeszotarski, 2022
+            function drawLegend(legendSelector, legendColorScale) {
+                const offsets = { width: 20, 
+                                  top: 2,
+                                  bottom: 40
+                };
+                const stepSize = 4;
+                const minMaxExtendPercent = 0;
+
+                const legend = d3.select(legendSelector);
+                const legendHeight = legend.attr("height");
+                const legendBarWidth = legend.attr("width") - (offsets.width * 2);
+                const legendMinMax = d3.extent(legendColorScale.domain()); 
+
+                const minMaxExtension = (legendMinMax[1] - legendMinMax[0]) * minMaxExtendPercent;
+                const barHeight = legendHeight - offsets.top - offsets.bottom;
+
+                let barScale = d3.scaleLinear().domain([legendMinMax[0]-minMaxExtension, legendMinMax[1]+minMaxExtension])
+                                               .range([0,legendBarWidth]);
+                let barAxis = d3.axisBottom(barScale);
+
+                let bar = legend.append("g")
+                                .attr("class", "legend colorbar")
+                                .attr("transform", `translate(${offsets.width},${offsets.top})`)
+                
+                if (legendColorScale.hasOwnProperty('thresholds') || legendColorScale.hasOwnProperty('quantiles')) {
+                    let thresholds = [];
+                    if (legendColorScale.hasOwnProperty('thresholds')) { 
+                        thresholds = legendColorScale.thresholds() 
+                    }
+                    else { 
+                        thresholds = legendColorScale.quantiles() 
+                    }
+        
+                    const barThresholds = [legendMinMax[0], ...thresholds, legendMinMax[1]];
+
+                    barAxis.tickValues(barThresholds);
+                    
+                    for (let i=0; i<barThresholds.length-1; i++) {
+                    let dataStart = barThresholds[i];
+                    let dataEnd = barThresholds[i+1];
+                    let pixelStart = barAxis.scale()(dataStart);
+                    let pixelEnd = barAxis.scale()(dataEnd);
+                    
+                    bar.append("rect")
+                        .attr("x", pixelStart)
+                        .attr("y", 0)
+                        .attr("width", pixelEnd - pixelStart )
+                        .attr("height", barHeight)
+                        .style("fill", legendColorScale( (dataStart + dataEnd) / 2.0 ) ); 
+                    }
+                }
+                
+                legend.append("g")
+                      .attr("class", "legend axis")
+                      .attr("transform",`translate(${offsets.width},${offsets.top+barHeight+5})`)
+                      .style("color", "orange")
+                      .call(barAxis);
+            }
+
+
+            // slider interactivity
+            const slider = document.getElementById('slider');
+            const output = document.getElementById('output');
+            const ticksContainer = document.getElementById('slider-ticks');
+            const labelsContainer = document.getElementById('slider-labels');
+
+            const years = [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022];
+
+            years.forEach(year => {
+
+                const tick = document.createElement('div');
+                tick.className = 'slider-tick';
+                ticksContainer.appendChild(tick);
+
+                const label = document.createElement('div');
+                label.className = 'slider-label';
+                label.textContent = year;
+                labelsContainer.appendChild(label);
+            });
+
+            slider.addEventListener('input', () => {
+                output.textContent = slider.value;
+                updateHeatMap(slider.value);
+                let yearValue = slider.value;
+
+                nationalData.forEach ( d => {
+                    if (d['Year'] == slider.value) {
+                        national.textContent = d.nation_median_debt;
+                    }
+                }
+                )
+                console.log(slider.value);
+            });
+
+            function heatMapAnimation() {
+                const years = [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022];
+                let currentYear = 0;
+                const animationInterval = setInterval(() => {
+                    const year = years[currentYear];
+                    updateHeatMap(year);
+                    
+                    d3.selectAll(".state")
+                      .transition()
+                      .duration(2000)
+                      .ease(d3.easeLinear)
+                      .style("fill", d => colorScale(d.properties.median_medical_debt));
+
+                    currentYear++;
+
+                    if(currentYear >= years.length) {
+                        clearInterval(animationInterval);
+                    }
+                }, 5000);
+            }
+            console.log("Debtdata", debtData)
+            // return {debtData}
+        }
+
+        requestHeatData();
+
+        // help me
+        // function heatMapAnimation(data) {
+        //     const us = d3.json("us-smaller.json");
+        //     var states = topojson.feature(us, us.objects.states);
+        //     var statesMesh = topojson.mesh(us, us.objects.states);
+        //     var projection = d3.geoAlbersUsa().fitSize([mapWidth, mapHeight], states);
+        //     var path = d3.geoPath().projection(projection);
+
+        // let graticule = d3.geoGraticule10(); 
+        // map.append("path").attr("class", "graticule").attr("d", path(graticule));
+
+        // let statePaths = map.selectAll("path.state").data(states.features)
+        //                         .join("path")
+        //                         .attr("class", "state")
+        //                         .attr("note", d => d.id)
+        //                         .attr("d", path)
+        //                         .on("mouseover", mouseEntersState)
+        //                         .on("mouseout", mouseLeavesState);
+        //     const dataArray = Object.values(data);
+        //     // console.log("is", Array.isArray(dataArray))
+        //     console.log("array", dataArray);
+        //     dataArray.forEach(i => {
+        //         // i.forEach(d => {
+
+        //         const years = [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022];
+        //         let currentYear = 0;
+        //         const animationInterval = setInterval(() => {
+        //             const year = years[currentYear];
+        //             // update heat map
+        //             let yearDebt = []
+        //             i.forEach( d=> {
+        //                 if (d.year == currentYear) {
+        //                     yearDebt.push(d);
+        //                 }
+        //             })
+        //             console.log(currentYear, yearDebt);
+
+        //             var yearDict = {};
+        //             yearDebt.forEach( d => {
+        //                 yearDict[d.state_fips] = d;
+        //             });
+        //             console.log("dictionary", yearDict);
+
+        //             statePaths.each(function(d) {
+        //                 id = d.id;
+        //                 if (yearDict[id]) {
+        //                     d.properties.median_medical_debt = yearDict[id].median_medical_debt;
+        //                     d.properties.state_abbreviation = yearDict[id].state_abbreviation;
+        //                 }
+        //             })
+                
+        //             map.selectAll(".state")
+        //             .transition()
+        //             .duration(350)
+        //             .ease(d3.easeLinear)
+        //             .style("fill", d => colorScale(d.properties.median_medical_debt))
+        //             // end of update heat map  
+        //                 d3.selectAll(".state")
+        //                 .transition()
+        //                 .duration(2000)
+        //                 .ease(d3.easeLinear)
+        //                 .style("fill", d => colorScale(d.properties.median_medical_debt));
+
+        //                 year++;
+
+        //                 if(year >= years.length) {
+        //                     clearInterval(animationInterval);
+        //                 }
+        //             }, 5000);
+        //     });
+        // // })
+        //     }
+
+        //     document.addEventListener("DOMContentLoaded", function() {
+        //         var heatMap = document.getElementById("heatmapdiv");
+
+        //         requestHeatData().then((debtData) => {
+        //             var observer = new IntersectionObserver(function(entries) {
+        //                 entries.forEach(entry => {
+        //                     console.log("dom loaded", entry.isIntersecting)
+        //                     if (entry.isIntersecting) {
+        //                         heatMapAnimation(debtData);
+        //                     }
+        //                 });
+        //             }, { threshold: 0.5}
+        //         );
+        //         observer.observe(heatMap)
+        //         })
+        //     })
+    
+        
+    </script>
+</body>
+</html>
